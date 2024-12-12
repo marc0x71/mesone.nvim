@@ -1,7 +1,8 @@
 local default_settings = {
     build_folder = "build",
     build_type = "debug",
-    info_depth = 3
+    info_depth = 3,
+    show_command_logs = false
 }
 
 local settings = {}
