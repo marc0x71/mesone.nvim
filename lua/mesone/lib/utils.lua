@@ -23,6 +23,12 @@ local function _read_all(filename)
     return content
 end
 
+local function _read_file(filename, callback)
+    if _file_exists(filename) then
+        for line in io.lines(filename) do callback(line) end
+    end
+end
+
 local M = {
     file_exists = function(name) return _file_exists(name) end,
 
@@ -44,6 +50,8 @@ local M = {
     end,
 
     read_all = function(filename) return _read_all(filename) end,
+
+    read_file = function(filename, callback) _read_file(filename, callback) end,
 
     read_json_file = function(filename)
         return vim.json.decode(_read_all(filename) or "null",
@@ -138,7 +146,13 @@ local M = {
     end,
 
     remove_prefix = function(str, prefix)
-        return (string.sub(str, 0, #prefix) == prefix) and string.sub(str, #prefix + 1) or str
+        return (string.sub(str, 0, #prefix) == prefix) and
+                   string.sub(str, #prefix + 1) or str
+    end,
+
+    is_failure_message = function(str)
+        return string.match(str:lower(), "error") or
+                   string.match(str:lower(), "failed")
     end
 
 }

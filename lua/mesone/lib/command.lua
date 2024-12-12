@@ -3,11 +3,13 @@ local windows_listener = require('mesone.lib.listener.window_listener')
 local notification_listener = require('mesone.lib.listener.notification_listener')
 local writer_listener = require('mesone.lib.listener.writer_listener')
 local quickfix_listener = require('mesone.lib.listener.quickfix_listener')
+local utils = require('mesone.lib.utils')
 
 local M = {}
 
 function M:new(opts)
   local o = {
+    build_folder = opts.build_folder or vim.uv.cwd(),
     command = opts.command or "meson",
     success_message = opts.success_message or "Done",
     failure_message = opts.failure_message or "Failed",
@@ -44,7 +46,7 @@ function M:_task(args, on_progress, on_complete)
 end
 
 function M:execute(args, action, on_terminate)
-  local listeners = {writer_listener:new(self.log_filename), quickfix_listener:new()}
+  local listeners = {writer_listener:new(self.log_filename), quickfix_listener:new(self.build_folder)}
   if not self.silent_mode then vim.list_extend(listeners, {notification_listener:new(action)}) end
   if self.show_log_window then vim.list_extend(listeners, {windows_listener:new(action)}) end
 
@@ -52,6 +54,9 @@ function M:execute(args, action, on_terminate)
   for _, listener in ipairs(listeners) do listener:update("start", full_command) end
 
   local on_progress = function(line_type, line)
+    if utils.is_failure_message(line) then
+      line_type = "err"
+    end
     for _, listener in ipairs(listeners) do listener:update(line_type, line) end
   end
 
