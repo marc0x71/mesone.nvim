@@ -8,3 +8,11 @@ end, {
     end
 })
 
+local mesone_augroup = vim.api.nvim_create_augroup("mesone_augroup",
+                                                   {clear = true})
+
+vim.api.nvim_create_autocmd({"VimEnter", "DirChanged"}, {
+    callback = function(_) require('mesone.app').get():init() end,
+    group = mesone_augroup
+})
+

@@ -23,9 +23,10 @@ end
 function M:_on_init_completed()
     self.project = project:new({folder = self.opts:get().build_folder})
     self.project:load()
+    notification.notify("Mesone initialized", vim.log.levels.INFO)
 end
 
-function M:_init()
+function M:init()
     self.project = nil
     local pwd = vim.uv.cwd() .. "/"
     if utils.file_exists(pwd .. "meson.build") then
@@ -116,7 +117,7 @@ end
 function M:parse_command(opts)
     local action = opts.fargs[1]
     if action == "init" then
-        self:_init()
+        self:init()
     elseif action == "setup" then
         self:_meson_setup()
     elseif action == "compile" then
