@@ -58,8 +58,14 @@ local M = {
                                {luanil = {object = true, array = true}})
     end,
 
-    buf_append_colorized = function(buf, content, content_type)
-        vim.api.nvim_buf_set_lines(buf, -1, -1, true, {content})
+    buf_append_colorized = function(buf, content, content_type, reset)
+      reset = reset or false
+        if reset then
+            vim.api.nvim_buf_set_lines(buf, 0, -1, true, {content})
+        else
+            vim.api.nvim_buf_set_lines(buf, -1, -1, true, {content})
+        end
+
         local row = vim.api.nvim_buf_line_count(buf)
         local highlight = 'Normal'
         if content_type == "err" or content_type == "fail" then

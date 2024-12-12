@@ -18,14 +18,14 @@ function M:_on_command_exit(status)
     if status == 0 then
         self:_update_project()
     elseif status ~= 0 and not self.opts:get().show_command_logs then
-        self:show_log()
+        self:_show_log()
     end
 end
 
 function M:_update_project()
     self.project = project:new({folder = self.opts:get().build_folder})
     self.project:load()
-    self.opts:update({build_type = self.project.options.build_type })
+    self.opts:update({build_type = self.project.options.build_type})
 end
 
 function M:_on_init_completed()
@@ -129,13 +129,15 @@ function M:parse_command(opts)
         self:_meson_setup()
     elseif action == "compile" then
         self:_meson_compile()
+    elseif action == "log" then
+        self:_show_log()
     else
         vim.notify("Mesone: invalid arguments: " .. opts.args,
                    vim.log.levels.ERROR)
     end
 end
 
-function M:show_log()
+function M:_show_log()
     local buf, _ = window.centered_window()
 
     -- press 'q' or 'esc' to close window
@@ -149,13 +151,15 @@ function M:show_log()
 
     vim.api.nvim_set_option_value("readonly", false, {buf = buf})
     vim.api.nvim_set_option_value("modifiable", true, {buf = buf})
-    -- vim.api.nvim_command("$read" .. self.log_filename)
+    local first = true
 
     utils.read_file(self.log_filename, function(line)
         local content_type = "out"
         if utils.is_failure_message(line) then content_type = "err" end
-        utils.buf_append_colorized(buf, line, content_type)
+        utils.buf_append_colorized(buf, line, content_type, first)
+        first = false
     end)
+
     vim.api.nvim_set_option_value("readonly", true, {buf = buf})
     vim.api.nvim_set_option_value("modifiable", false, {buf = buf})
 
