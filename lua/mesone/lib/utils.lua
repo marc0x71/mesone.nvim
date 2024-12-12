@@ -135,7 +135,12 @@ local M = {
         for i = 1, #table2 do table1[#table1 + 1] = table2[i] end
         return table1
 
+    end,
+
+    remove_prefix = function(str, prefix)
+        return (string.sub(str, 0, #prefix) == prefix) and string.sub(str, #prefix + 1) or str
     end
+
 }
 
 return M

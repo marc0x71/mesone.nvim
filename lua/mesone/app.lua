@@ -1,8 +1,9 @@
 local M = {}
 local instance = nil
 local settings = require('mesone.settings')
-local utils = require('mesone.lib.utils')
+local scandir = require("plenary.scandir")
 local command = require('mesone.lib.command')
+local utils = require('mesone.lib.utils')
 local notification = require('mesone.lib.notification')
 local project = require('mesone.project')
 
@@ -18,33 +19,39 @@ function M:_on_command_exit(status)
     end
 end
 
-function M:_on_init_completed(status)
-    self.running = false
-    if status == 0 then
-        self.project = project:new({folder = self.opts:get().build_folder})
-        self.project:load()
-    else
-        self.project = nil
-    end
+function M:_on_init_completed()
+    self.project = project:new({folder = self.opts:get().build_folder})
+    self.project:load()
 end
 
 function M:_init()
-    -- FIXME is really necessary use 'meson setup' to initialize plugin?
-    if self.running then
-        notification.notify("Meson already running", "warn")
-        return
+    self.project = nil
+    local pwd = vim.uv.cwd() .. "/"
+    if utils.file_exists(pwd .. "meson.build") then
+        local metainfo_dir = nil
+        scandir.scan_dir_async(pwd, {
+            hidden = true,
+            respect_gitignore = false,
+            silent = true,
+            depth = self.opts:get().info_depth,
+            only_dirs = true,
+            add_dirs = true,
+            search_pattern = {".*meson.info"},
+            on_insert = function(filename)
+                filename = vim.fs.normalize(filename)
+                if metainfo_dir == nil and vim.fs.basename(filename) ==
+                    "meson-info" then
+                    metainfo_dir = vim.fs.dirname(filename)
+                end
+            end,
+            on_exit = function(_)
+                self.opts:update({
+                    build_folder = utils.remove_prefix(metainfo_dir, pwd)
+                })
+                vim.schedule(function() self:_on_init_completed() end)
+            end
+        })
     end
-    local cmd = command:new({
-        log_filename = self.log_filename,
-        show_command_logs = self.opts:get().show_command_logs
-    })
-    local args = {
-        "setup", "--buildtype", self.opts:get().build_type,
-        self.opts:get().build_folder
-    }
-    self.running = true
-    cmd:execute(args, "Init",
-                function(status) self:_on_init_completed(status) end)
 end
 
 function M:_build_setup()
