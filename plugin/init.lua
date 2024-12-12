@@ -4,7 +4,7 @@ end, {
     nargs = "*",
     desc = "Mesone, a NeoVim plugin for Meson build system",
     complete = function(_, _, _)
-        -- TODO command completer -- see :h command-completion-customlist
+        -- TODO command completer -- see :h lua-guide-commands-create
     end
 })
 
