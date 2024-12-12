@@ -15,14 +15,21 @@ end
 
 function M:_on_command_exit(status)
     self.running = false
-    if status ~= 0 and not self.opts:get().show_command_logs then
+    if status == 0 then
+        self:_update_project()
+    elseif status ~= 0 and not self.opts:get().show_command_logs then
         self:show_log()
     end
 end
 
-function M:_on_init_completed()
+function M:_update_project()
     self.project = project:new({folder = self.opts:get().build_folder})
     self.project:load()
+    self.opts:update({build_type = self.project.options.build_type })
+end
+
+function M:_on_init_completed()
+    self:_update_project()
     notification.notify("Mesone initialized", vim.log.levels.INFO)
 end
 

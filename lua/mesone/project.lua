@@ -22,20 +22,38 @@ function M:load()
     end
     self.meson_version = meson_info.meson_version.full
 
+    self.options = {}
     self.targets = {}
     self.tests = {}
     self.sources = {}
 
+    -- option
+    self:_parse_build_options(utils.read_json_file(self.folder ..
+                                                       meson_info.introspection
+                                                           .information
+                                                           .buildoptions.file))
     -- targets
     self:_parse_targets(utils.read_json_file(self.folder ..
                                                  meson_info.introspection
                                                      .information.targets.file))
 
     -- tests
-    self:_parse_tests(meson_info.directories.build, utils.read_json_file(self.folder ..
+    self:_parse_tests(meson_info.directories.build,
+                      utils.read_json_file(self.folder ..
                                                meson_info.introspection
                                                    .information.tests.file))
 
+end
+
+function M:_parse_build_options(options)
+    for _, option in ipairs(options) do
+        if option.name == "backend" then
+            self.options.backend = option.value
+        elseif option.name == "buildtype" then
+            self.options.build_type = option.value
+            self.options.build_types = option.choices
+        end
+    end
 end
 
 function M:_parse_tests(path, tests)
