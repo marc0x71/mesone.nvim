@@ -1,9 +1,9 @@
 local uv = vim.uv
-local windows_listener = require('mesone.lib.listener.window_listener')
-local notification_listener = require('mesone.lib.listener.notification_listener')
-local writer_listener = require('mesone.lib.listener.writer_listener')
-local quickfix_listener = require('mesone.lib.listener.quickfix_listener')
-local utils = require('mesone.lib.utils')
+local windows_listener = require("mesone.lib.listener.window_listener")
+local notification_listener = require("mesone.lib.listener.notification_listener")
+local writer_listener = require("mesone.lib.listener.writer_listener")
+local quickfix_listener = require("mesone.lib.listener.quickfix_listener")
+local utils = require("mesone.lib.utils")
 
 local M = {}
 
@@ -28,7 +28,7 @@ function M:_task(args, on_progress, on_complete)
   local stdout = uv.new_pipe()
   local stderr = uv.new_pipe()
 
-  handle, _ = uv.spawn(self.command, {args = args, stdio = {stdin, stdout, stderr}}, function(status, _)
+  handle, _ = uv.spawn(self.command, { args = args, stdio = { stdin, stdout, stderr } }, function(status, _)
     ---@diagnostic disable-next-line: param-type-mismatch
     uv.close(handle)
     vim.schedule(function() on_complete(status) end)
@@ -46,9 +46,9 @@ function M:_task(args, on_progress, on_complete)
 end
 
 function M:execute(args, action, on_terminate)
-  local listeners = {writer_listener:new(self.log_filename), quickfix_listener:new(self.build_folder)}
-  if not self.silent_mode then vim.list_extend(listeners, {notification_listener:new(action)}) end
-  if self.show_log_window then vim.list_extend(listeners, {windows_listener:new(action)}) end
+  local listeners = { writer_listener:new(self.log_filename), quickfix_listener:new(self.build_folder) }
+  if not self.silent_mode then vim.list_extend(listeners, { notification_listener:new(action) }) end
+  if self.show_log_window then vim.list_extend(listeners, { windows_listener:new(action) }) end
 
   local full_command = self.command .. " " .. table.concat(args, " ")
   for _, listener in ipairs(listeners) do listener:update("start", full_command) end

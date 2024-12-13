@@ -1,13 +1,13 @@
 local notification = require("fidget.notification")
 local progress = require("fidget.progress")
 
-M = {handle = nil, percentage = -1}
+M = { handle = nil, percentage = -1 }
 
 M.progress = function(title, message, percentage)
   percentage = percentage or 1
 
   if M.handle == nil then
-    M.handle = progress.handle.create({title = title, message = message, lsp_client = {name = "Mesone"}})
+    M.handle = progress.handle.create({ title = title, message = message, lsp_client = { name = "Mesone" } })
     M.percentage = percentage
     return
   end

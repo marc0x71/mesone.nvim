@@ -8,8 +8,9 @@ function listener:new()
 end
 
 function listener:update(content_type, content) end
+
 function listener:success() end
+
 function listener:failure() end
 
 return listener
-

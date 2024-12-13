@@ -1,4 +1,4 @@
-local listener = require('mesone.lib.listener.init')
+local listener = require("mesone.lib.listener.init")
 
 local writer_listener = listener:new()
 
@@ -7,7 +7,7 @@ function writer_listener:new(filename)
   local f = io.open(filename, "w")
   io.close(f)
 
-  local o = {filename = filename}
+  local o = { filename = filename }
   setmetatable(o, self)
   self.__index = self
   return o
