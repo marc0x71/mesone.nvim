@@ -125,7 +125,12 @@ end
 function M:_debug_test()
   local test = self:_get_selected()
   if test == nil then return end
-  -- TODO debug test
+  if vim.tbl_count(test.test_list) > 1 then
+    ntf.notify(test.name .. " is a suite, please select single testcase to debug", vim.log.levels.WARN)
+    return
+  end
+  self:_close_me()
+  testcases.debug(test, self.opts:get().dap_adapter)
 end
 
 function M:_goto_test()

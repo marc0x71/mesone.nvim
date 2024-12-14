@@ -1,5 +1,6 @@
 local utils = require("mesone.lib.utils")
 local job = require("plenary.job")
+local dap = require("dap")
 
 local generic_testcase_name = "<Unknown>"
 
@@ -224,6 +225,39 @@ function M.run(test, callback)
   else
     _run_generic(test, callback)
   end
+end
+
+local function _compose_args_gtest(test)
+  return { "--gtest_filter=" .. test.test_list[1].name }
+end
+
+local function _compose_args_catch2(test)
+  return { test.test_list[1].name }
+end
+
+local function _compose_args_generic(_)
+  return {}
+end
+
+function M.debug(test, dap_adapter)
+  local args = {}
+  if test.type == "gtest" then
+    args = _compose_args_gtest(test)
+  elseif test.type == "catch2" then
+    args = _compose_args_catch2(test)
+  else
+    args = _compose_args_generic(test)
+  end
+  local dap_config = {
+    args = args,
+    cwd = vim.uv.cwd(),
+    program = test.cmd[1],
+    request = "launch",
+    name = "Debug " .. test.test_list[1].name,
+    type = dap_adapter
+  }
+
+  dap.run(dap_config)
 end
 
 return M

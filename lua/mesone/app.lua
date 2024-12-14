@@ -78,10 +78,12 @@ function M:init()
         end
       end,
       on_exit = function(_)
-        self.opts:update({
-          build_folder = utils.remove_prefix(metainfo_dir, pwd)
-        })
-        vim.schedule(function() self:_on_init_completed() end)
+        if metainfo_dir ~= nil then
+          self.opts:update({
+            build_folder = utils.remove_prefix(metainfo_dir, pwd)
+          })
+          vim.schedule(function() self:_on_init_completed() end)
+        end
       end
     })
   end
