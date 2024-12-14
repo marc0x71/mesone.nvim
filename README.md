@@ -6,9 +6,9 @@ Simple NeoVim plugin for [Meson Build](https://mesonbuild.com/) system integrati
 # Description
 Mesone is a NeoVim plugin that will allow you (easily) to manage your workflow with [Meson Build System](https://mesonbuild.com/) directly from your favorite editor.
 
-You will be able to perform the 'setup' of your project simply by pressing a button, as well as compile it or maybe run your tests.
+You will be able to perform the `setup` of your project simply by pressing a button, as well as `compile` it or maybe run your tests.
 
-You will also be able to debug your tests, and even your applications, directly from NeoVim thanks to the help of `nvim-dap`, or perform the compilation of your code automagically when you save your changes!
+You will also be able to debug your tests and even your applications, directly from NeoVim thanks to the help of `nvim-dap`, or perform the compilation of your code automagically when you save your changes!
 
 So what are you waiting for? Install it and enjoy! 😀
 
@@ -50,6 +50,7 @@ You can use your preferred package manager, the following example is based on [`
     }
   },
 ```
+
 ## Configuration
 
 `Mesone` comes with the following default configuration:
@@ -87,6 +88,7 @@ Type can execute Mesone in `command-mode` writing `:Mesone <action>`
 |debug|Run target in debug (using DAP)|
 
 ## Tests
+
 Using `Mesone` you can easly execute test, the following keyboard shortcut are available:
 
 - `r` - execute selected test
@@ -103,3 +105,4 @@ Currently only for the following test framework is supported the "go-to" feature
 ## Troubleshooting
 
 If this plugin isn't working, feel free to make an issue or a pull request.
+
