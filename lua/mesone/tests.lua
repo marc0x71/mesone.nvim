@@ -188,6 +188,11 @@ function M:_show_tests_status()
 end
 
 function M:show()
+  if self.project == nil then
+    self:_close_me()
+    ntf.notify("No test found", vim.log.levels.WARN)
+    return
+  end
   if self.buf == nil or not vim.api.nvim_buf_is_valid(self.buf) then
     local max_len = self.project:get_max_testcase_len() + 3
     self.main_window = vim.api.nvim_get_current_win();
