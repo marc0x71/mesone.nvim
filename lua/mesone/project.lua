@@ -142,4 +142,15 @@ function M:update_test_result(results)
   end
 end
 
+function M:get_executable()
+  local list = {}
+  for _, target in pairs(self.targets) do
+    if target.type=="executable" then
+      list[target.name]=target
+    end
+  end
+  return list
+end
+
+
 return M

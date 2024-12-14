@@ -165,6 +165,13 @@ function M:_tests()
   end
 end
 
+function M:_run_target()
+  local executables = self.project:get_executable()
+  utils.select_from_list("Select target to run", vim.tbl_keys(executables), function(name)
+    vim.cmd("botright split term://" .. executables[name].target)
+  end)
+end
+
 function M:parse_command(opts)
   local action = opts.fargs[1]
   if action == "init" then
@@ -178,7 +185,7 @@ function M:parse_command(opts)
   elseif action == "log" then
     self:_show_log()
   elseif action == "run" then
-    -- TODO run target
+    self:_run_target()
   elseif action == "debug" then
     -- TODO debug target
   elseif action == "settings" then
