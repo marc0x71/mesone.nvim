@@ -1,4 +1,5 @@
 local scandir = require("plenary.scandir")
+local dap = require("dap")
 
 local command = require("mesone.lib.command")
 local notification = require("mesone.lib.notification")
@@ -172,6 +173,22 @@ function M:_run_target()
   end)
 end
 
+function M:_debug_target()
+  local executables = self.project:get_executable()
+  utils.select_from_list("Select target to run", vim.tbl_keys(executables), function(name)
+    local dap_config = {
+      args = {},
+      cwd = vim.uv.cwd(),
+      program = executables[name].target,
+      request = "launch",
+      name = "Debug " .. name,
+      type = self.opts:get().dap_adapter
+    }
+
+    dap.run(dap_config)
+  end)
+end
+
 function M:parse_command(opts)
   local action = opts.fargs[1]
   if action == "init" then
@@ -187,7 +204,7 @@ function M:parse_command(opts)
   elseif action == "run" then
     self:_run_target()
   elseif action == "debug" then
-    -- TODO debug target
+    self:_debug_target()
   elseif action == "settings" then
     -- TODO show/change project settings
   elseif action == "log" then

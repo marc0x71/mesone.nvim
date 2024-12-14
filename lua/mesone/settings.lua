@@ -3,7 +3,8 @@ local default_settings = {
   build_type = "debug",
   info_depth = 3,
   show_command_logs = false,
-  auto_compile = true
+  auto_compile = true,
+  dap_adapter = "gdb",
 }
 
 local settings = {}
