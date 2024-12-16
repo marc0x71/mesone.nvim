@@ -2,7 +2,7 @@ local ntf = require("mesone.lib.notification")
 local utils = require("mesone.lib.utils")
 local window = require("mesone.ui.window")
 local icons = require("mesone.ui.icons")
-local testcases = require("mesone.testcases")
+local testcases = require("mesone.testcases.testcase")
 local M = {}
 
 function M:new(opts, project)

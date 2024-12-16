@@ -1,4 +1,4 @@
-local testcases = require("mesone.testcases")
+local testcases = require("mesone.testcases.testcase")
 local notification = require("mesone.lib.notification")
 local utils = require("mesone.lib.utils")
 
