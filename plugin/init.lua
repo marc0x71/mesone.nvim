@@ -4,11 +4,7 @@ end, {
   nargs = "*",
   desc = "Mesone, a NeoVim plugin for Meson build system",
   complete = function(lead, cmd, cursor)
-      return require('mesone.lib.cmdparse').evaluate(lead, cmd, cursor)
-    -- TODO command completer -- see :h lua-guide-commands-create
-    local valid_args = { "init", "setup", "compile", "test", "run", "debug", "setting", "log" }
-      print(lead, cmd, cursor)
-      return {}
+    return require("mesone.lib.cmdparse").evaluate(lead, cmd, cursor)
   end
 })
 
