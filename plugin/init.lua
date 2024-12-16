@@ -3,8 +3,8 @@ vim.api.nvim_create_user_command("Mesone", function(opts)
 end, {
   nargs = "*",
   desc = "Mesone, a NeoVim plugin for Meson build system",
-  complete = function(_, _, _)
-    -- TODO command completer -- see :h lua-guide-commands-create
+  complete = function(lead, cmd, cursor)
+    return require("mesone.lib.cmdparse").evaluate(lead, cmd, cursor)
   end
 })
 
