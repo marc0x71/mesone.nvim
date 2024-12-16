@@ -31,6 +31,7 @@ You can use your preferred package manager, the following example is based on [`
 ```lua
   {
     'marc0x71/mesone.nvim',
+    lazy = false,
     opts = {
       build_folder = "build",
       build_type = "debugoptimized",
@@ -38,7 +39,12 @@ You can use your preferred package manager, the following example is based on [`
       show_command_logs = false,
       auto_compile = true
     },
-
+    dependencies = {
+      "j-hui/fidget.nvim",
+      "mfussenegger/nvim-dap",
+      "nvim-telescope/telescope.nvim",
+      "nvim-lua/plenary.nvim",
+    },
     keys = {
       { '<leader>mi', '<cmd>Mesone init<cr>',    desc = "Initialize Mesone plugin" },
       { '<leader>ms', '<cmd>Mesone setup<cr>',   desc = "Initialize Meson project" },
@@ -50,6 +56,9 @@ You can use your preferred package manager, the following example is based on [`
     }
   },
 ```
+
+> [!NOTE]
+> `Mesone` must be configured disabling *lazy* if you want auto-commands works at startup without using `lua require('mesone')`
 
 ## Configuration
 
