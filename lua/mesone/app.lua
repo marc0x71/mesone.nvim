@@ -233,4 +233,34 @@ function M:check_auto_build(opts)
   end
 end
 
+function M:check_focused_buffer(bufnr, filename)
+  if self.tests ~= nil then
+    self.tests:update_buffer_signs(bufnr, filename)
+  end
+end
+
+function M:on_buffer_focused(ev)
+  if self.project == nil or ev.file == "" then
+    return
+  end
+  local buffer_filename = ev.file
+
+  if not utils.file_exists(buffer_filename) then
+    return
+  end
+  local found = false
+  for _, filename in ipairs(self.project.sources) do
+    if buffer_filename == filename then
+      found = true
+      break
+    end
+  end
+  if found then
+    local buffer_number = vim.fn.bufnr(buffer_filename)
+    if vim.fn.buflisted(buffer_number) ~= 0 and vim.api.nvim_buf_is_valid(buffer_number) then
+      self:check_focused_buffer(buffer_number, buffer_filename)
+    end
+  end
+end
+
 return M

@@ -3,6 +3,7 @@ local utils = require("mesone.lib.utils")
 local window = require("mesone.ui.window")
 local icons = require("mesone.ui.icons")
 local testcases = require("mesone.testcases.testcase")
+local signs = require("mesone.lib.signs")
 local M = {}
 
 function M:new(opts, project)
@@ -118,6 +119,7 @@ function M:_run_test()
     vim.schedule(function()
       self:_show_tests_status()
       vim.api.nvim_win_set_cursor(self.win, { self.last_position, 0 })
+      self:_update_signs_all_buffers()
     end)
   end)
 end
@@ -221,6 +223,23 @@ function M:refresh()
   else
     self:_show_tests_status()
   end
+end
+
+function M:_update_signs_all_buffers()
+  for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+    local filename = vim.api.nvim_buf_get_name(bufnr)
+    self:update_buffer_signs(bufnr, filename)
+  end
+end
+
+function M:update_buffer_signs(bufnr, filename)
+  if self.project == nil then
+    return
+  end
+  if self.project.tests_status[filename] == nil then
+    return
+  end
+  signs.show_sign(bufnr, self.project.tests_status[filename])
 end
 
 return M

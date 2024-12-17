@@ -24,6 +24,7 @@ function M:load()
   self.options = {}
   self.targets = {}
   self.tests = {}
+  self.tests_status = {}
   self.sources = {}
 
   -- option
@@ -69,6 +70,12 @@ function M:_parse_tests(path, tests)
     for _, testcase in ipairs(test_list) do
       if string.len(testcase.name) > self.max_testcase_len then self.max_testcase_len = string.len(testcase.name) end
       test_runner = testcase.type
+      if self.tests_status[testcase.filename] == nil then
+        self.tests_status[testcase.filename] = { { name = testcase.name, line = testcase.line, status = testcase.status } }
+      else
+        table.insert(self.tests_status[testcase.filename],
+          { name = testcase.name, line = testcase.line, status = testcase.status })
+      end
     end
     table.insert(self.tests, {
       name = test.name,
@@ -128,8 +135,18 @@ function M:update_test_result(results)
         local break_me = false;
         for _, testcase in ipairs(testsuite.test_list) do
           if test_result.name == testcase.name then
+            -- update testcase
             testcase.status = test_result.status
             testcase.output = test_result.output
+            if self.tests_status[testcase.filename]~=nil then
+              -- update test status
+              for _, test_state in ipairs(self.tests_status[testcase.filename]) do
+                if test_state.name==testcase.name then
+                  test_state.status = testcase.status
+                  break
+                end
+              end
+            end
             break_me = true
             break
           end
@@ -145,12 +162,11 @@ end
 function M:get_executable()
   local list = {}
   for _, target in pairs(self.targets) do
-    if target.type=="executable" then
-      list[target.name]=target
+    if target.type == "executable" then
+      list[target.name] = target
     end
   end
   return list
 end
-
 
 return M
