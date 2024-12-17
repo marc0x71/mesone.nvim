@@ -84,7 +84,7 @@ You can overwrite using `setup` function or via `opts` if you are using [`lazy.n
 
 ## Available Commands
 
-Type can execute Mesone in `command-mode` writing `:Mesone <action>` 
+You can execute Mesone in `command-mode` writing `:Mesone <action>` 
 
 |Actions|Description|
 |-|-|
@@ -96,15 +96,19 @@ Type can execute Mesone in `command-mode` writing `:Mesone <action>`
 |run|Run target|
 |debug|Run target in debug (using DAP)|
 
+The Mesone plugin will help you to compose the command via the auto-completion 😊
+
 ## Tests
 
-Using `Mesone` you can easly execute test, the following keyboard shortcut are available:
+Using `Mesone` you can easily execute test, the following keyboard shortcut are available:
 
 - `r` - execute selected test
 - `d` - debug selected test
 - `l` - show last log of selected test
 - `<CR>` - go to the source code of selected test
 - `q` or `<ESC>` - close the testcases window
+
+In the test source code a sign will appear, in the definition, which will indicate the status of the last execution
 
 Currently only for the following test framework is supported the "go-to" feature:
 
