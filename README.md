@@ -110,7 +110,9 @@ Using `Mesone` you can easily execute test, the following keyboard shortcut are 
 
 In the test source code a sign will appear, in the definition, which will indicate the status of the last execution
 
-Currently only for the following test framework is supported the "go-to" feature:
+![test_signs](https://github.com/user-attachments/assets/53dfe22a-f214-4896-8f6c-b2afadc907b6)
+
+Currently only for the following test framework is supported the "go-to" feature and test signs:
 
 - [`GTest`](https://github.com/google/googletest)
 - [`Catch2`](https://github.com/catchorg/Catch2)
