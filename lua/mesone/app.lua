@@ -103,7 +103,7 @@ function M:_meson_setup()
     show_command_logs = self.opts:get().show_command_logs
   })
   local args = {
-    "setup", "--buildtype", self.opts:get().build_type,
+    "setup", "--reconfigure", "--buildtype", self.opts:get().build_type,
     self.opts:get().build_folder
   }
   self.running = true
