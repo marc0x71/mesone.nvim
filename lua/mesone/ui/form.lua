@@ -62,8 +62,9 @@ function M:_parse_buffer()
         error = true
       end
     else
-      if self.opts.fields[line] ~= nil then
-        current_key = line
+      local key = line:match("(.+):.*")
+      if self.opts.fields[key] ~= nil then
+        current_key = key
       else
         ntf.notify("Unexpected field [" .. line .. "]", vim.log.levels.ERROR)
         error = true
@@ -78,7 +79,8 @@ function M:_parse_buffer()
       local available = self.opts.fields[key]
       if vim.tbl_count(available) > 0 then
         if not vim.list_contains(available, result[key]) then
-          ntf.notify("Invalid field [" .. key .. "]", vim.log.levels.ERROR)
+          local expected = table.concat(available, ",")
+          ntf.notify("Invalid field [" .. key .. "] expected value [" .. expected .. "]", vim.log.levels.ERROR)
         end
       end
     end
@@ -109,7 +111,13 @@ end
 function M:_update_buffer()
   local content = {}
   for _, key in pairs(utils.orderedPairs(self.opts.fields)) do
-    table.insert(content, key)
+    local label = key .. ":"
+    if not vim.tbl_isempty(self.opts.fields[key]) then
+      local tbl = vim.tbl_map(function(x) return tostring(x) end, self.opts.fields[key])
+      local expected = table.concat(tbl, ",")
+      label = label .. " (" .. tostring(expected) .. ")"
+    end
+    table.insert(content, label)
     table.insert(content, tostring(self.values[key]))
   end
 
@@ -126,13 +134,13 @@ end
 
 function M:show(title, values, callback)
   self.values = values
-  self.buf, self.win = window.popup(title)
+  self.buf, self.win = window.popup(title, 70, 20)
   vim.api.nvim_buf_set_name(self.buf, "mesone-settings-ui")
   vim.api.nvim_set_option_value("filetype",  "mesone-form", { buf = self.buf })
   vim.api.nvim_set_option_value("buftype",   "acwrite",     { buf = self.buf })
   vim.api.nvim_set_option_value("bufhidden", "delete",      { buf = self.buf })
 
-  vim.keymap.set("n", "q",     function() self:_close() end, { buffer = self.buf, silent = true })
+  vim.keymap.set("n", "q", function() self:_close() end, { buffer = self.buf, silent = true })
 
   vim.api.nvim_create_autocmd("BufWriteCmd", {
     buffer = self.buf,
