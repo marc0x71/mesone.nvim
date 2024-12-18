@@ -135,6 +135,22 @@ function M:setup(opts)
     self.opts:get().build_folder)
 end
 
+function M:_clean()
+  if self.running then
+    notification.notify("Meson already running", "warn")
+    return
+  end
+  local cmd = command:new({
+    build_folder = self.full_build_folder,
+    log_filename = self.log_filename,
+    show_command_logs = self.opts:get().show_command_logs
+  })
+  local args = { "compile", "--clean", "-C", self.opts:get().build_folder }
+  self.running = true
+  cmd:execute(args, "clean",
+    function(status) self:_on_command_exit(status) end)
+end
+
 function M:_show_log()
   local buf, _ = window.centered_window()
 
@@ -215,6 +231,8 @@ function M:parse_command(opts)
     self:_show_settings()
   elseif action == "log" then
     self:_show_log()
+  elseif action == "clean" then
+    self:_clean()
   else
     notification.notify("Mesone: invalid arguments: " .. opts.args,
       vim.log.levels.ERROR)

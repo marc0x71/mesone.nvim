@@ -1,7 +1,7 @@
 local M = {
   command = {
     Mesone = {
-      init = {}, setup = {}, compile = {}, test = {}, run = {}, debug = {}, setting = {}, log = {}
+      init = {}, setup = {}, compile = {}, test = {}, run = {}, debug = {}, setting = {}, log = {}, clean = {}
     }
   }
 }

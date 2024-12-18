@@ -46,14 +46,15 @@ You can use your preferred package manager, the following example is based on [`
       "nvim-lua/plenary.nvim",
     },
     keys = {
-      { '<leader>mi', '<cmd>Mesone init<cr>',             desc = "Initialize Mesone plugin" },
-      { '<leader>ms', '<cmd>Mesone setup<cr>',            desc = "Initialize Meson project" },
-      { '<leader>mc', '<cmd>Mesone compile<cr>',          desc = "Compile project" },
-      { '<leader>mt', '<cmd>Mesone test<cr>',             desc = "Show tests" },
-      { '<leader>mr', '<cmd>Mesone run<cr>',              desc = "Run target" },
-      { '<leader>md', '<cmd>Mesone debug<cr>',            desc = "Debug target" },
-      { '<leader>ml', '<cmd>Mesone log<cr>',              desc = "Show last log" },
-      { '<leader>mS', '<cmd>Mesone project settings<cr>', desc = "Project settings" },
+      { '<leader>mi', '<cmd>Mesone init<cr>',    desc = "Initialize Mesone" },
+      { '<leader>ms', '<cmd>Mesone setup<cr>',   desc = "Initialize Meson project" },
+      { '<leader>mc', '<cmd>Mesone compile<cr>', desc = "Compile project" },
+      { '<leader>mt', '<cmd>Mesone test<cr>',    desc = "Show tests" },
+      { '<leader>mr', '<cmd>Mesone run<cr>',     desc = "Run target" },
+      { '<leader>md', '<cmd>Mesone debug<cr>',   desc = "Debug target" },
+      { '<leader>ml', '<cmd>Mesone log<cr>',     desc = "Show last log" },
+      { '<leader>mC', '<cmd>Mesone clean<cr>',   desc = "Clean" },
+      { '<leader>mS', '<cmd>Mesone setting<cr>', desc = "Project settings" },
     }
   },
 ```
@@ -96,6 +97,8 @@ You can execute Mesone in `command-mode` writing `:Mesone <action>`
 |test|Show all test cases found (show next paragraph for available shortcuts)|
 |run|Run target|
 |debug|Run target in debug (using DAP)|
+|clean|Clean meson project|
+|setting|Change project settings|
 
 The Mesone plugin will help you to compose the command via the auto-completion 😊
 
