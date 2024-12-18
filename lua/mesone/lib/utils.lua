@@ -39,7 +39,7 @@ local M = {
       print("unexpected error creating ", name)
       return false
     end
-    f:write(content)
+    f:write(content .. "\n")
     f:close()
     return true
   end,

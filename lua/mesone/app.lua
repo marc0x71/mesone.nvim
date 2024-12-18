@@ -1,19 +1,22 @@
 local scandir = require("plenary.scandir")
 local dap = require("dap")
 
-local command = require("mesone.lib.command")
-local notification = require("mesone.lib.notification")
-local utils = require("mesone.lib.utils")
 local window = require("mesone.ui.window")
 local project = require("mesone.project")
 local tests = require("mesone.tests")
 local settings = require("mesone.settings")
+local command = require("mesone.lib.command")
+local notification = require("mesone.lib.notification")
+local storage = require("mesone.lib.storage")
+local utils = require("mesone.lib.utils")
 
 local M = {}
 local instance = nil
 
 M.get = function()
-  if not instance then instance = M:new(settings:new()) end
+  if not instance then
+    instance = M:new(settings:new())
+  end
   return instance
 end
 
@@ -125,7 +128,8 @@ function M:_meson_compile()
 end
 
 function M:setup(opts)
-  self.opts:update(opts)
+  local saved_opts = storage.load(vim.uv.cwd(), {})
+  self.opts:update(vim.tbl_extend("force", opts, saved_opts))
   self.full_build_folder = vim.fs.normalize(
     vim.uv.cwd() .. "/" ..
     self.opts:get().build_folder)
@@ -207,12 +211,12 @@ function M:parse_command(opts)
     self:_run_target()
   elseif action == "debug" then
     self:_debug_target()
-  elseif action == "settings" then
-    -- TODO show/change project settings
+  elseif action == "setting" then
+    self:_show_settings()
   elseif action == "log" then
     self:_show_log()
   else
-    vim.notify("Mesone: invalid arguments: " .. opts.args,
+    notification.notify("Mesone: invalid arguments: " .. opts.args,
       vim.log.levels.ERROR)
   end
 end
@@ -261,6 +265,13 @@ function M:on_buffer_focused(ev)
       self:check_focused_buffer(buffer_number, buffer_filename)
     end
   end
+end
+
+function M:_show_settings()
+  self.opts:ui(function(opts)
+    storage.save(vim.uv.cwd(), opts)
+    notification.notify("Project setting saved", vim.log.levels.INFO)
+  end)
 end
 
 return M

@@ -46,13 +46,14 @@ You can use your preferred package manager, the following example is based on [`
       "nvim-lua/plenary.nvim",
     },
     keys = {
-      { '<leader>mi', '<cmd>Mesone init<cr>',    desc = "Initialize Mesone plugin" },
-      { '<leader>ms', '<cmd>Mesone setup<cr>',   desc = "Initialize Meson project" },
-      { '<leader>mc', '<cmd>Mesone compile<cr>', desc = "Compile project" },
-      { '<leader>mt', '<cmd>Mesone test<cr>',    desc = "Show tests" },
-      { '<leader>mr', '<cmd>Mesone run<cr>',     desc = "Run target" },
-      { '<leader>md', '<cmd>Mesone debug<cr>',   desc = "Debug target" },
-      { '<leader>ml', '<cmd>Mesone log<cr>',     desc = "Show last log" },
+      { '<leader>mi', '<cmd>Mesone init<cr>',             desc = "Initialize Mesone plugin" },
+      { '<leader>ms', '<cmd>Mesone setup<cr>',            desc = "Initialize Meson project" },
+      { '<leader>mc', '<cmd>Mesone compile<cr>',          desc = "Compile project" },
+      { '<leader>mt', '<cmd>Mesone test<cr>',             desc = "Show tests" },
+      { '<leader>mr', '<cmd>Mesone run<cr>',              desc = "Run target" },
+      { '<leader>md', '<cmd>Mesone debug<cr>',            desc = "Debug target" },
+      { '<leader>ml', '<cmd>Mesone log<cr>',              desc = "Show last log" },
+      { '<leader>mS', '<cmd>Mesone project settings<cr>', desc = "Project settings" },
     }
   },
 ```
