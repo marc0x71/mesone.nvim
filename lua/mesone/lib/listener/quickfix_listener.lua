@@ -19,7 +19,7 @@ function quickfix_listener:update(line_type, content)
         filename = vim.fs.normalize(self.cwd .. "/" .. filename),
         lnum = row,
         type = "E",
-        text = error
+        text = error,
       })
     end
   end

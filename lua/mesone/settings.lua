@@ -22,7 +22,9 @@ function M:update(opts)
   self.inner = vim.tbl_deep_extend("force", self.inner, opts or {})
 end
 
-function M:get() return self.inner end
+function M:get()
+  return self.inner
+end
 
 function M:ui(on_changed)
   if self.myform == nil then
@@ -30,12 +32,18 @@ function M:ui(on_changed)
       fields = {
         build_folder = {},
         build_type = {
-          "plain", "debug", "debugoptimized", "release", "minsize", "custom" },
+          "plain",
+          "debug",
+          "debugoptimized",
+          "release",
+          "minsize",
+          "custom",
+        },
         info_depth = {},
         show_command_logs = { true, false },
         auto_compile = { true, false },
-        dap_adapter = {}
-      }
+        dap_adapter = {},
+      },
     })
   end
   self.myform:show("Mesone project settings", self.inner, function(conf)

@@ -21,13 +21,17 @@ M.progress = function(title, message, percentage)
 end
 
 M.progress_complete = function()
-  if M.handle == nil then return end
+  if M.handle == nil then
+    return
+  end
 
   M.handle:finish()
   M.handle = nil
   M.percentage = -1
 end
 
-M.notify = function(message, level) notification.notify(message, level) end
+M.notify = function(message, level)
+  notification.notify(message, level)
+end
 
 return M

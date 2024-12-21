@@ -1,9 +1,17 @@
 local M = {
   command = {
     Mesone = {
-      init = {}, setup = {}, compile = {}, test = {}, run = {}, debug = {}, setting = {}, log = {}, clean = {}
-    }
-  }
+      init = {},
+      setup = {},
+      compile = {},
+      test = {},
+      run = {},
+      debug = {},
+      setting = {},
+      log = {},
+      clean = {},
+    },
+  },
 }
 
 M.evaluate = function(lead, cmd, cursor)

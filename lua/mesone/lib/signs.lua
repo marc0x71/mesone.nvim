@@ -24,13 +24,12 @@ M.show_sign = function(bufnr, lines)
     end
 
     if hl ~= "" then
-      vim.api.nvim_buf_set_extmark(bufnr, mesone_ns, line.line - 1, 0,
-        {
-          virt_text_pos = "eol",
-          virt_text = { { "   " .. line.status, hl } },
-          sign_text = sign,
-          sign_hl_group = hl,
-        })
+      vim.api.nvim_buf_set_extmark(bufnr, mesone_ns, line.line - 1, 0, {
+        virt_text_pos = "eol",
+        virt_text = { { "   " .. line.status, hl } },
+        sign_text = sign,
+        sign_hl_group = hl,
+      })
     end
 
     ::continue::

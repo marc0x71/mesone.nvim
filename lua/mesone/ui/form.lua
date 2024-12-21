@@ -13,15 +13,16 @@ function M:new(opts)
 end
 
 function M:_close()
-  if self.closing then return end
+  if self.closing then
+    return
+  end
   self.closing = true
 
   if self.buf ~= nil and vim.api.nvim_buf_is_valid(self.buf) then
     vim.api.nvim_buf_delete(self.buf, { force = true })
   end
   if self.win ~= nil and vim.api.nvim_win_is_valid(self.win) then
-    vim.api.nvim_win_close(self.win,
-      true)
+    vim.api.nvim_win_close(self.win, true)
   end
 
   self.win = nil
@@ -92,10 +93,14 @@ function M:_parse_buffer()
 end
 
 function M:_save()
-  if self.closing then return false end
+  if self.closing then
+    return false
+  end
   self.closing = true
 
-  if self.buf == nil or not vim.api.nvim_buf_is_valid(self.buf) then return false end
+  if self.buf == nil or not vim.api.nvim_buf_is_valid(self.buf) then
+    return false
+  end
 
   local new_values = self:_parse_buffer()
 
@@ -113,7 +118,9 @@ function M:_update_buffer()
   for _, key in pairs(utils.orderedPairs(self.opts.fields)) do
     local label = key .. ":"
     if not vim.tbl_isempty(self.opts.fields[key]) then
-      local tbl = vim.tbl_map(function(x) return tostring(x) end, self.opts.fields[key])
+      local tbl = vim.tbl_map(function(x)
+        return tostring(x)
+      end, self.opts.fields[key])
       local expected = table.concat(tbl, ",")
       label = label .. " (" .. tostring(expected) .. ")"
     end
@@ -124,11 +131,10 @@ function M:_update_buffer()
   vim.api.nvim_buf_set_lines(self.buf, 0, #content, false, content)
 
   for line = 0, #vim.tbl_keys(self.opts.fields) * 2, 2 do
-    vim.api.nvim_buf_set_extmark(self.buf, form_ns, line, 0,
-      {
-        line_hl_group = "Title",
-        hl_eol = true
-      })
+    vim.api.nvim_buf_set_extmark(self.buf, form_ns, line, 0, {
+      line_hl_group = "Title",
+      hl_eol = true,
+    })
   end
 end
 
@@ -136,23 +142,31 @@ function M:show(title, values, callback)
   self.values = values
   self.buf, self.win = window.popup(title, 70, 20)
   vim.api.nvim_buf_set_name(self.buf, "mesone-settings-ui")
-  vim.api.nvim_set_option_value("filetype",  "mesone-form", { buf = self.buf })
-  vim.api.nvim_set_option_value("buftype",   "acwrite",     { buf = self.buf })
-  vim.api.nvim_set_option_value("bufhidden", "delete",      { buf = self.buf })
+  vim.api.nvim_set_option_value("filetype", "mesone-form", { buf = self.buf })
+  vim.api.nvim_set_option_value("buftype", "acwrite", { buf = self.buf })
+  vim.api.nvim_set_option_value("bufhidden", "delete", { buf = self.buf })
 
-  vim.keymap.set("n", "q", function() self:_close() end, { buffer = self.buf, silent = true })
+  vim.keymap.set("n", "q", function()
+    self:_close()
+  end, { buffer = self.buf, silent = true })
 
   vim.api.nvim_create_autocmd("BufWriteCmd", {
     buffer = self.buf,
     callback = function()
       if self:_save() then
-        vim.schedule(function() self:_close() end)
+        vim.schedule(function()
+          self:_close()
+        end)
       end
-    end
+    end,
   })
   vim.api.nvim_create_autocmd("BufLeave", {
     buffer = self.buf,
-    callback = function() vim.schedule(function() self:_close() end) end
+    callback = function()
+      vim.schedule(function()
+        self:_close()
+      end)
+    end,
   })
   vim.keymap.set("i", "<CR>", "<Nop>", { noremap = true, silent = true })
 

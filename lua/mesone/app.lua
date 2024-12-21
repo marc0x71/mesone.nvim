@@ -29,8 +29,7 @@ function M:new(opts)
     log_filename = log_filename,
     project = nil,
     tests = nil,
-    full_build_folder = vim.fs.normalize(cwd .. "/" ..
-      opts:get().build_folder)
+    full_build_folder = vim.fs.normalize(cwd .. "/" .. opts:get().build_folder),
   }
   setmetatable(o, self)
   self.__index = self
@@ -75,19 +74,20 @@ function M:init()
       search_pattern = { ".*meson.info" },
       on_insert = function(filename)
         filename = vim.fs.normalize(filename)
-        if metainfo_dir == nil and vim.fs.basename(filename) ==
-          "meson-info" then
+        if metainfo_dir == nil and vim.fs.basename(filename) == "meson-info" then
           metainfo_dir = vim.fs.dirname(filename)
         end
       end,
       on_exit = function(_)
         if metainfo_dir ~= nil then
           self.opts:update({
-            build_folder = utils.remove_prefix(metainfo_dir, pwd)
+            build_folder = utils.remove_prefix(metainfo_dir, pwd),
           })
-          vim.schedule(function() self:_on_init_completed() end)
+          vim.schedule(function()
+            self:_on_init_completed()
+          end)
         end
-      end
+      end,
     })
   end
 end
@@ -100,15 +100,19 @@ function M:_meson_setup()
   local cmd = command:new({
     build_folder = self.full_build_folder,
     log_filename = self.log_filename,
-    show_command_logs = self.opts:get().show_command_logs
+    show_command_logs = self.opts:get().show_command_logs,
   })
   local args = {
-    "setup", "--reconfigure", "--buildtype", self.opts:get().build_type,
-    self.opts:get().build_folder
+    "setup",
+    "--reconfigure",
+    "--buildtype",
+    self.opts:get().build_type,
+    self.opts:get().build_folder,
   }
   self.running = true
-  cmd:execute(args, "Setup",
-    function(status) self:_on_command_exit(status) end)
+  cmd:execute(args, "Setup", function(status)
+    self:_on_command_exit(status)
+  end)
 end
 
 function M:_meson_compile()
@@ -119,20 +123,19 @@ function M:_meson_compile()
   local cmd = command:new({
     build_folder = self.full_build_folder,
     log_filename = self.log_filename,
-    show_command_logs = self.opts:get().show_command_logs
+    show_command_logs = self.opts:get().show_command_logs,
   })
   local args = { "compile", "-C", self.opts:get().build_folder }
   self.running = true
-  cmd:execute(args, "Compile",
-    function(status) self:_on_command_exit(status) end)
+  cmd:execute(args, "Compile", function(status)
+    self:_on_command_exit(status)
+  end)
 end
 
 function M:setup(opts)
   local saved_opts = storage.load(vim.uv.cwd(), {})
   self.opts:update(vim.tbl_extend("force", opts, saved_opts))
-  self.full_build_folder = vim.fs.normalize(
-    vim.uv.cwd() .. "/" ..
-    self.opts:get().build_folder)
+  self.full_build_folder = vim.fs.normalize(vim.uv.cwd() .. "/" .. self.opts:get().build_folder)
 end
 
 function M:_clean()
@@ -143,12 +146,13 @@ function M:_clean()
   local cmd = command:new({
     build_folder = self.full_build_folder,
     log_filename = self.log_filename,
-    show_command_logs = self.opts:get().show_command_logs
+    show_command_logs = self.opts:get().show_command_logs,
   })
   local args = { "compile", "--clean", "-C", self.opts:get().build_folder }
   self.running = true
-  cmd:execute(args, "clean",
-    function(status) self:_on_command_exit(status) end)
+  cmd:execute(args, "clean", function(status)
+    self:_on_command_exit(status)
+  end)
 end
 
 function M:_show_log()
@@ -159,22 +163,24 @@ function M:_show_log()
     vim.api.nvim_buf_set_keymap(buf, "n", key, "<cmd>close<cr>", {
       nowait = true,
       noremap = true,
-      silent = true
+      silent = true,
     })
   end
 
-  vim.api.nvim_set_option_value("readonly",   false, { buf = buf })
-  vim.api.nvim_set_option_value("modifiable", true,  { buf = buf })
+  vim.api.nvim_set_option_value("readonly", false, { buf = buf })
+  vim.api.nvim_set_option_value("modifiable", true, { buf = buf })
   local first = true
 
   utils.read_file(self.log_filename, function(line)
     local content_type = "out"
-    if utils.is_failure_message(line) then content_type = "err" end
+    if utils.is_failure_message(line) then
+      content_type = "err"
+    end
     utils.buf_append_colorized(buf, line, content_type, first)
     first = false
   end)
 
-  vim.api.nvim_set_option_value("readonly",   true,  { buf = buf })
+  vim.api.nvim_set_option_value("readonly", true, { buf = buf })
   vim.api.nvim_set_option_value("modifiable", false, { buf = buf })
 end
 
@@ -204,7 +210,7 @@ function M:_debug_target()
       program = executables[name].target,
       request = "launch",
       name = "Debug " .. name,
-      type = self.opts:get().dap_adapter
+      type = self.opts:get().dap_adapter,
     }
 
     dap.run(dap_config)
@@ -234,8 +240,7 @@ function M:parse_command(opts)
   elseif action == "clean" then
     self:_clean()
   else
-    notification.notify("Mesone: invalid arguments: " .. opts.args,
-      vim.log.levels.ERROR)
+    notification.notify("Mesone: invalid arguments: " .. opts.args, vim.log.levels.ERROR)
   end
 end
 

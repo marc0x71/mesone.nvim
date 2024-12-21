@@ -12,7 +12,7 @@ function window_listener:new(action)
     vim.api.nvim_buf_set_keymap(buf, "n", key, "<cmd>close<cr>", {
       nowait = true,
       noremap = true,
-      silent = true
+      silent = true,
     })
   end
 
@@ -24,41 +24,37 @@ function window_listener:new(action)
 end
 
 function window_listener:update(content_type, content)
-  if not vim.api.nvim_buf_is_valid(self.buf) and
-    not vim.api.nvim_win_is_valid(self.win) then
+  if not vim.api.nvim_buf_is_valid(self.buf) and not vim.api.nvim_win_is_valid(self.win) then
     return
   end
-  vim.api.nvim_set_option_value("readonly",   false, { buf = self.buf })
-  vim.api.nvim_set_option_value("modifiable", true,  { buf = self.buf })
-  local row = utils.buf_append_colorized(self.buf, content, content_type,
-    self.first_line)
+  vim.api.nvim_set_option_value("readonly", false, { buf = self.buf })
+  vim.api.nvim_set_option_value("modifiable", true, { buf = self.buf })
+  local row = utils.buf_append_colorized(self.buf, content, content_type, self.first_line)
   self.first_line = false
   vim.api.nvim_win_set_cursor(self.win, { row, 0 })
-  vim.api.nvim_set_option_value("readonly",   true,  { buf = self.buf })
+  vim.api.nvim_set_option_value("readonly", true, { buf = self.buf })
   vim.api.nvim_set_option_value("modifiable", false, { buf = self.buf })
 end
 
 function window_listener:success()
-  if not vim.api.nvim_buf_is_valid(self.buf) and
-    not vim.api.nvim_win_is_valid(self.win) then
+  if not vim.api.nvim_buf_is_valid(self.buf) and not vim.api.nvim_win_is_valid(self.win) then
     return
   end
-  vim.api.nvim_set_option_value("readonly",   false, { buf = self.buf })
-  vim.api.nvim_set_option_value("modifiable", true,  { buf = self.buf })
+  vim.api.nvim_set_option_value("readonly", false, { buf = self.buf })
+  vim.api.nvim_set_option_value("modifiable", true, { buf = self.buf })
   utils.buf_append_colorized(self.buf, "Success!", "end")
-  vim.api.nvim_set_option_value("readonly",   true,  { buf = self.buf })
+  vim.api.nvim_set_option_value("readonly", true, { buf = self.buf })
   vim.api.nvim_set_option_value("modifiable", false, { buf = self.buf })
 end
 
 function window_listener:failure()
-  if not vim.api.nvim_buf_is_valid(self.buf) and
-    not vim.api.nvim_win_is_valid(self.win) then
+  if not vim.api.nvim_buf_is_valid(self.buf) and not vim.api.nvim_win_is_valid(self.win) then
     return
   end
-  vim.api.nvim_set_option_value("readonly",   false, { buf = self.buf })
-  vim.api.nvim_set_option_value("modifiable", true,  { buf = self.buf })
+  vim.api.nvim_set_option_value("readonly", false, { buf = self.buf })
+  vim.api.nvim_set_option_value("modifiable", true, { buf = self.buf })
   utils.buf_append_colorized(self.buf, "Failure!", "end")
-  vim.api.nvim_set_option_value("readonly",   true,  { buf = self.buf })
+  vim.api.nvim_set_option_value("readonly", true, { buf = self.buf })
   vim.api.nvim_set_option_value("modifiable", false, { buf = self.buf })
 end
 

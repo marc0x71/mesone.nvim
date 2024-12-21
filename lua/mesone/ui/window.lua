@@ -10,11 +10,19 @@ end
 local function win_buf_autocmd(buf, win)
   vim.api.nvim_create_autocmd("BufWinLeave", {
     buffer = buf,
-    callback = function() vim.schedule(function() close_me(buf, win) end) end
+    callback = function()
+      vim.schedule(function()
+        close_me(buf, win)
+      end)
+    end,
   })
   vim.api.nvim_create_autocmd("BufLeave", {
     buffer = buf,
-    callback = function() vim.schedule(function() close_me(buf, win) end) end
+    callback = function()
+      vim.schedule(function()
+        close_me(buf, win)
+      end)
+    end,
   })
 end
 
@@ -40,12 +48,12 @@ local M = {
       height = win_height,
       row = row,
       col = col,
-      border = "rounded"
+      border = "rounded",
     }
 
     local win = vim.api.nvim_open_win(buf, true, opts)
 
-    vim.api.nvim_set_option_value("readonly",   true,  { buf = buf })
+    vim.api.nvim_set_option_value("readonly", true, { buf = buf })
     vim.api.nvim_set_option_value("modifiable", false, { buf = buf })
 
     win_buf_autocmd(buf, win)
@@ -64,7 +72,7 @@ local M = {
     local win = vim.api.nvim_open_win(buf, true, opts)
     vim.api.nvim_buf_set_lines(buf, -1, -1, true, {})
 
-    vim.api.nvim_set_option_value("readonly",   true,  { buf = buf })
+    vim.api.nvim_set_option_value("readonly", true, { buf = buf })
     vim.api.nvim_set_option_value("modifiable", false, { buf = buf })
 
     return buf, win
@@ -83,7 +91,7 @@ local M = {
       row = math.floor(((vim.o.lines - height) / 2) - 1),
       col = math.floor((vim.o.columns - width) / 2),
       width = width,
-      height = height
+      height = height,
     })
     return buf, win
   end,
@@ -108,14 +116,14 @@ local M = {
       row = math.floor(((vim.o.lines - height) / 2) - 1),
       col = math.floor((vim.o.columns - width) / 2),
       width = math.floor(width),
-      height = math.floor(height)
+      height = math.floor(height),
     })
-    vim.api.nvim_set_option_value("readonly",   false,    { buf = buf })
-    vim.api.nvim_set_option_value("modifiable", true,     { buf = buf })
-    vim.api.nvim_set_option_value("bufhidden",  "delete", { buf = buf })
-    vim.api.nvim_set_option_value("buftype",    "nofile", { buf = buf })
-    vim.api.nvim_set_option_value("filetype",   "mesone", { buf = buf })
-    vim.api.nvim_set_option_value("wrap",       false,    { win = win })
+    vim.api.nvim_set_option_value("readonly", false, { buf = buf })
+    vim.api.nvim_set_option_value("modifiable", true, { buf = buf })
+    vim.api.nvim_set_option_value("bufhidden", "delete", { buf = buf })
+    vim.api.nvim_set_option_value("buftype", "nofile", { buf = buf })
+    vim.api.nvim_set_option_value("filetype", "mesone", { buf = buf })
+    vim.api.nvim_set_option_value("wrap", false, { win = win })
 
     -- press 'q' or 'esc' to close window
     for _, key in ipairs({ "q", "<esc>" }) do
@@ -125,11 +133,11 @@ local M = {
     local lines = vim.split(content, "\n")
     vim.api.nvim_buf_set_lines(buf, 0, -1, true, lines)
 
-    vim.api.nvim_set_option_value("readonly",   true,  { buf = buf })
+    vim.api.nvim_set_option_value("readonly", true, { buf = buf })
     vim.api.nvim_set_option_value("modifiable", false, { buf = buf })
 
     win_buf_autocmd(buf, win)
-  end
+  end,
 }
 
 return M

@@ -11,15 +11,12 @@ local function _build_runners(...)
 end
 
 local M = {
-  runners = _build_runners(
-    "mesone.testcases.gtest_runner", "mesone.testcases.catch2_runner"
-  ),
-  default_runner = default_runner:new()
+  runners = _build_runners("mesone.testcases.gtest_runner", "mesone.testcases.catch2_runner"),
+  default_runner = default_runner:new(),
 }
 
 function M.get_testcases(path, cmd, target_provider)
-  for _, runner in pairs(M.runners)
-  do
+  for _, runner in pairs(M.runners) do
     local testcases = runner:get_testcases(path, cmd, target_provider)
     if testcases ~= nil then
       return testcases
@@ -47,7 +44,7 @@ function M.debug(test, dap_adapter)
     program = test.cmd[1],
     request = "launch",
     name = "Debug " .. test.test_list[1].name,
-    type = dap_adapter
+    type = dap_adapter,
   }
 
   dap.run(dap_config)

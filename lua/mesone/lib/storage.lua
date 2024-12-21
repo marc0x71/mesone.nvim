@@ -2,7 +2,9 @@ local utils = require("mesone.lib.utils")
 
 local M = { path = vim.fn.stdpath("data") .. "/mesone/" }
 
-local function _hash(folder) return vim.fn.sha256(folder) end
+local function _hash(folder)
+  return vim.fn.sha256(folder)
+end
 
 M.load = function(folder, default)
   local saved = nil

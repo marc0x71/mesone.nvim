@@ -28,21 +28,16 @@ function M:load()
   self.sources = {}
 
   -- option
-  self:_parse_build_options(utils.read_json_file(self.folder ..
-    meson_info.introspection
-    .information
-    .buildoptions.file))
+  self:_parse_build_options(utils.read_json_file(self.folder .. meson_info.introspection.information.buildoptions.file))
   --
   -- targets
-  self:_parse_targets(utils.read_json_file(self.folder ..
-    meson_info.introspection
-    .information.targets.file))
+  self:_parse_targets(utils.read_json_file(self.folder .. meson_info.introspection.information.targets.file))
 
   -- tests
-  self:_parse_tests(meson_info.directories.build,
-    utils.read_json_file(self.folder ..
-      meson_info.introspection
-      .information.tests.file))
+  self:_parse_tests(
+    meson_info.directories.build,
+    utils.read_json_file(self.folder .. meson_info.introspection.information.tests.file)
+  )
 end
 
 function M:_parse_build_options(options)
@@ -68,20 +63,25 @@ function M:_parse_tests(path, tests)
     end
     local test_runner = test.protocol
     for _, testcase in ipairs(test_list) do
-      if string.len(testcase.name) > self.max_testcase_len then self.max_testcase_len = string.len(testcase.name) end
+      if string.len(testcase.name) > self.max_testcase_len then
+        self.max_testcase_len = string.len(testcase.name)
+      end
       test_runner = testcase.type
       if self.tests_status[testcase.filename] == nil then
-        self.tests_status[testcase.filename] = { { name = testcase.name, line = testcase.line, status = testcase.status } }
+        self.tests_status[testcase.filename] =
+          { { name = testcase.name, line = testcase.line, status = testcase.status } }
       else
-        table.insert(self.tests_status[testcase.filename],
-          { name = testcase.name, line = testcase.line, status = testcase.status })
+        table.insert(
+          self.tests_status[testcase.filename],
+          { name = testcase.name, line = testcase.line, status = testcase.status }
+        )
       end
     end
     table.insert(self.tests, {
       name = test.name,
       type = test_runner,
       cmd = test.cmd,
-      test_list = test_list
+      test_list = test_list,
     })
   end
 end
@@ -89,8 +89,7 @@ end
 function M:_parse_targets(targets)
   for _, target in ipairs(targets) do
     -- skip custom, run and jar target type
-    if target.type == "custom" or target.type == "run" or target.type ==
-      "jar" then
+    if target.type == "custom" or target.type == "run" or target.type == "jar" then
       goto continue
     end
 
@@ -98,8 +97,7 @@ function M:_parse_targets(targets)
 
     for _, detail in ipairs(target.target_sources) do
       if detail.generated_sources ~= nil then
-        sources_list = utils.concat_array(sources_list,
-          detail.generated_sources)
+        sources_list = utils.concat_array(sources_list, detail.generated_sources)
       end
       if detail.sources ~= nil then
         sources_list = utils.concat_array(sources_list, detail.sources)
@@ -113,7 +111,7 @@ function M:_parse_targets(targets)
       sources = sources_list,
       -- A target usually generates only one file.
       -- Only 'custom' targets could have multiple outputs, but it will be filtered.
-      target = target.filename[1]
+      target = target.filename[1],
     }
 
     if target.subproject == nil then
@@ -124,24 +122,28 @@ function M:_parse_targets(targets)
   end
 end
 
-function M:get_max_testcase_len() return self.max_testcase_len end
+function M:get_max_testcase_len()
+  return self.max_testcase_len
+end
 
-function M:get_target(name) return self.targets[name] end
+function M:get_target(name)
+  return self.targets[name]
+end
 
 function M:update_test_result(results)
   for _, test_result in ipairs(results.test_list) do
     for _, testsuite in ipairs(self.tests) do
       if testsuite.name == results.name then
-        local break_me = false;
+        local break_me = false
         for _, testcase in ipairs(testsuite.test_list) do
           if test_result.name == testcase.name then
             -- update testcase
             testcase.status = test_result.status
             testcase.output = test_result.output
-            if self.tests_status[testcase.filename]~=nil then
+            if self.tests_status[testcase.filename] ~= nil then
               -- update test status
               for _, test_state in ipairs(self.tests_status[testcase.filename]) do
-                if test_state.name==testcase.name then
+                if test_state.name == testcase.name then
                   test_state.status = testcase.status
                   break
                 end

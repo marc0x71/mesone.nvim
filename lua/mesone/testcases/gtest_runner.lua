@@ -13,11 +13,13 @@ function gtest_runner:get_testcases(path, cmd, _)
   local testlist_filename = os.tmpname()
 
   local command = {
-    cmd, "--gtest_list_tests", "--gtest_output=json:" .. testlist_filename
+    cmd,
+    "--gtest_list_tests",
+    "--gtest_output=json:" .. testlist_filename,
   }
   local result = vim.system(command, { text = true }):wait()
 
-  if (result.code ~= 0) then
+  if result.code ~= 0 then
     -- If there is an error is not gtest
     os.remove(testlist_filename)
     return nil
@@ -38,7 +40,7 @@ function gtest_runner:get_testcases(path, cmd, _)
         filename = filename,
         line = testcase.line,
         status = "unk",
-        type = runner_name
+        type = runner_name,
       })
     end
   end
@@ -65,32 +67,33 @@ end
 function gtest_runner:run(testsuite, callback)
   for _, testcase in ipairs(testsuite.test_list) do
     local output_filename = os.tmpname()
-    job:new({
-      command = table.concat(testsuite.cmd, ""),
-      args = { "--gtest_filter=" .. testcase.name, "--gtest_output=json:" .. output_filename },
-      on_exit = function(j, _)
-        local stdout = table.concat(j:result(), "\n")
+    job
+      :new({
+        command = table.concat(testsuite.cmd, ""),
+        args = { "--gtest_filter=" .. testcase.name, "--gtest_output=json:" .. output_filename },
+        on_exit = function(j, _)
+          local stdout = table.concat(j:result(), "\n")
 
-        local test_result = utils.read_json_file(output_filename)
+          local test_result = utils.read_json_file(output_filename)
 
-        local test_list = {}
-        for _, testsuite_result in ipairs(test_result.testsuites) do
-          local name_prefix = testsuite_result.name .. "."
-          for _, testcase_result in ipairs(testsuite_result.testsuite) do
-            table.insert(test_list, {
-              name = name_prefix .. testcase_result.name,
-              status = _gtest_status(testcase_result.result, testcase_result.failures),
-              output = stdout
-            })
+          local test_list = {}
+          for _, testsuite_result in ipairs(test_result.testsuites) do
+            local name_prefix = testsuite_result.name .. "."
+            for _, testcase_result in ipairs(testsuite_result.testsuite) do
+              table.insert(test_list, {
+                name = name_prefix .. testcase_result.name,
+                status = _gtest_status(testcase_result.result, testcase_result.failures),
+                output = stdout,
+              })
+            end
           end
-        end
 
-        os.remove(output_filename)
+          os.remove(output_filename)
 
-        callback({ name = testsuite.name, test_list = test_list })
-      end,
-
-    }):start()
+          callback({ name = testsuite.name, test_list = test_list })
+        end,
+      })
+      :start()
   end
 end
 
