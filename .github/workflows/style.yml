@@ -2,7 +2,7 @@ name: StyLua
 
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
     types: [opened, synchronize]
   workflow_dispatch:
