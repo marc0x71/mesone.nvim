@@ -245,7 +245,7 @@ function M:parse_command(opts)
 end
 
 function M:check_auto_build(opts)
-  if not self.opts:get().auto_compile then
+  if not self.opts:get().auto_compile or self.project==nil then
     return
   end
   local found = false
