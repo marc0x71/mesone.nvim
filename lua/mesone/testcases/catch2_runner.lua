@@ -47,9 +47,11 @@ local function _catch2_status(totals)
   return "unk"
 end
 
-function catch2_runner:run(testsuite, callback)
+function catch2_runner:run(testsuite, callback, run_sync)
+  run_sync = run_sync or false
   for _, testcase in ipairs(testsuite.test_list) do
-    job
+    local my_job = job
+      ---@diagnostic disable-next-line: missing-fields
       :new({
         command = table.concat(testsuite.cmd, ""),
         args = { "--reporter=json", testcase.name },
@@ -87,7 +89,11 @@ function catch2_runner:run(testsuite, callback)
           callback({ name = testsuite.name, test_list = test_list })
         end,
       })
-      :start()
+    if run_sync then
+      my_job:sync()
+    else
+      job:start()
+    end
   end
 end
 
