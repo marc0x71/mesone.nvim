@@ -1,6 +1,6 @@
 .PHONY: test 
 
-INIT = test/minimal_init.lua
+INIT = test/minimal_init.vim
 PLENARY_OPTS = {minimal_init='${INIT}', sequential=true}
 
 test: unit integration 
