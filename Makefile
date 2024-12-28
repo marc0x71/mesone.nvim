@@ -1,17 +1,14 @@
 .PHONY: test 
 
-INIT = test/minimal_init.vim
-PLENARY_OPTS = {minimal_init='${INIT}', sequential=true}
-
 test: unit integration 
 
 unit: build 
 	echo "----UNIT----"
-	nvim --headless -c "PlenaryBustedDirectory test/unit ${PLENARY_OPTS}"
+	nvim --headless --noplugin -u scripts/minimal_init.vim -c "PlenaryBustedDirectory test/unit/ { minimal_init = './scripts/minimal_init.vim' }"
 
 integration: build 
 	echo "----INTEGRATION----"
-	nvim --headless -c "PlenaryBustedDirectory test/integration ${PLENARY_OPTS}"
+	nvim --headless --noplugin -u scripts/minimal_init.vim -c "PlenaryBustedDirectory test/integration/ { minimal_init = './scripts/minimal_init.vim' }"
 
 build: 
 	$(MAKE) -C test build
