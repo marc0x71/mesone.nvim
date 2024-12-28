@@ -14,7 +14,11 @@ jobs:
         with:
           neovim: true
 
-      - name: Prepare
+      - name: Install meson
+        run: |
+          sudo apt-get install -y meson
+
+      - name: Install plenary
         run: |
           git clone --depth 1 https://github.com/nvim-lua/plenary.nvim ../plenary.nvim
 
