@@ -64,10 +64,12 @@ local function _gtest_status(result, failures)
   end
 end
 
-function gtest_runner:run(testsuite, callback)
+function gtest_runner:run(testsuite, callback, run_sync)
+  run_sync = run_sync or false
   for _, testcase in ipairs(testsuite.test_list) do
     local output_filename = os.tmpname()
-    job
+    local my_job = job
+      ---@diagnostic disable-next-line: missing-fields
       :new({
         command = table.concat(testsuite.cmd, ""),
         args = { "--gtest_filter=" .. testcase.name, "--gtest_output=json:" .. output_filename },
@@ -93,7 +95,11 @@ function gtest_runner:run(testsuite, callback)
           callback({ name = testsuite.name, test_list = test_list })
         end,
       })
-      :start()
+    if run_sync then
+      my_job:sync()
+    else
+      job:start()
+    end
   end
 end
 
