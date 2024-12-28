@@ -1,4 +1,7 @@
 # mesone.nvim
+
+[![Tests](https://github.com/marc0x71/mesone.nvim/actions/workflows/ci.yml/badge.svg)](https://github.com/marc0x71/mesone.nvim/actions/workflows/ci.yml)
+
 Simple NeoVim plugin for [Meson Build](https://mesonbuild.com/) system integration
 
 ![output](https://github.com/user-attachments/assets/9d963bf4-4ec3-4577-9296-ece69883f633)
