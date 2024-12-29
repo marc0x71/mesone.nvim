@@ -1,3 +1,4 @@
+local job = require("plenary.job")
 local uv = vim.uv
 local windows_listener = require("mesone.lib.listener.window_listener")
 local notification_listener = require("mesone.lib.listener.notification_listener")
@@ -16,6 +17,7 @@ function M:new(opts)
     log_filename = opts.log_filename or os.tmpname(),
     show_log_window = opts.show_command_logs,
     silent_mode = opts.silent_mode,
+    run_sync = opts.run_sync or false,
   }
   setmetatable(o, self)
   self.__index = self
@@ -23,49 +25,58 @@ function M:new(opts)
 end
 
 function M:_task(args, on_progress, on_complete)
-  local handle
-  local stdin = nil
-  local stdout = uv.new_pipe()
-  local stderr = uv.new_pipe()
-
-  handle, _ = uv.spawn(self.command, { args = args, stdio = { stdin, stdout, stderr } }, function(status, _)
-    ---@diagnostic disable-next-line: param-type-mismatch
-    uv.close(handle)
-    vim.schedule(function()
+  local parse_data = function(kind, data)
+    if data then
+      for line in data:gmatch("[^\r\n]+") do
+        vim.schedule(function()
+          on_progress(kind, line)
+        end)
+      end
+    end
+  end
+  local terminating = function(_, status)
+    if self.run_sync then
       on_complete(status)
-    end)
-  end)
-
-  uv.read_start(stdout, function(err, data)
-    assert(not err, err)
-    if data then
-      for line in data:gmatch("[^\r\n]+") do
-        vim.schedule(function()
-          on_progress("out", line)
-        end)
-      end
+    else
+      vim.schedule(function()
+        on_complete(status)
+      end)
     end
-  end)
-
-  uv.read_start(stderr, function(err, data)
-    assert(not err, err)
-    if data then
-      for line in data:gmatch("[^\r\n]+") do
-        vim.schedule(function()
-          on_progress("err", line)
-        end)
-      end
-    end
-  end)
+  end
+  return job
+    ---@diagnostic disable-next-line: missing-fields
+    :new({
+      command = self.command,
+      args = args,
+      on_stdout = function(_, data, _)
+        parse_data("out", data)
+      end,
+      on_stderr = function(_, data, _)
+        parse_data("err", data)
+      end,
+      on_exit = function(j, status)
+        terminating(j, status)
+      end,
+    })
 end
 
-function M:execute(args, action, on_terminate)
+function M:_build_listeners(action)
   local listeners = { writer_listener:new(self.log_filename), quickfix_listener:new(self.build_folder) }
   if not self.silent_mode then
     vim.list_extend(listeners, { notification_listener:new(action) })
   end
   if self.show_log_window then
     vim.list_extend(listeners, { windows_listener:new(action) })
+  end
+  return listeners
+end
+
+function M:execute(args, action, on_terminate, build_listeners)
+  local listeners = {}
+  if build_listeners ~= nil then
+    listeners = build_listeners(action)
+  else
+    listeners = self:_build_listeners(action)
   end
 
   local full_command = self.command .. " " .. table.concat(args, " ")
@@ -94,7 +105,11 @@ function M:execute(args, action, on_terminate)
     end
     on_terminate(status)
   end
-  self:_task(args, on_progress, on_complete)
+  if self.run_sync then
+    self:_task(args, on_progress, on_complete):sync()
+  else
+    self:_task(args, on_progress, on_complete):start()
+  end
 end
 
 return M
