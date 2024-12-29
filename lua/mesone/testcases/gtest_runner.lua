@@ -98,7 +98,7 @@ function gtest_runner:run(testsuite, callback, run_sync)
     if run_sync then
       my_job:sync()
     else
-      job:start()
+      my_job:start()
     end
   end
 end
