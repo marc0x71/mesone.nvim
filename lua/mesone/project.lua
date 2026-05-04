@@ -67,14 +67,16 @@ function M:_parse_tests(path, tests)
         self.max_testcase_len = string.len(testcase.name)
       end
       test_runner = testcase.type
-      if self.tests_status[testcase.filename] == nil then
-        self.tests_status[testcase.filename] =
-          { { name = testcase.name, line = testcase.line, status = testcase.status } }
-      else
-        table.insert(
-          self.tests_status[testcase.filename],
-          { name = testcase.name, line = testcase.line, status = testcase.status }
-        )
+      if testcase.filename ~= nil then
+        if self.tests_status[testcase.filename] == nil then
+          self.tests_status[testcase.filename] =
+            { { name = testcase.name, line = testcase.line, status = testcase.status } }
+        else
+          table.insert(
+            self.tests_status[testcase.filename],
+            { name = testcase.name, line = testcase.line, status = testcase.status }
+          )
+        end
       end
     end
     table.insert(self.tests, {
