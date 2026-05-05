@@ -7,6 +7,7 @@ local default_settings = {
   show_command_logs = false,
   auto_compile = true,
   dap_adapter = "gdb",
+  auto_close_terminal = false,
 }
 
 local M = {}
@@ -43,6 +44,7 @@ function M:ui(on_changed)
         show_command_logs = { true, false },
         auto_compile = { true, false },
         dap_adapter = {},
+        auto_close_terminal = { true, false }
       },
     })
   end

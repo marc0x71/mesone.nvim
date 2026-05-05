@@ -167,8 +167,8 @@ function M:_show_log()
     })
   end
 
-  vim.api.nvim_set_option_value("readonly", false, { buf = buf })
-  vim.api.nvim_set_option_value("modifiable", true, { buf = buf })
+  vim.api.nvim_set_option_value("readonly",   false, { buf = buf })
+  vim.api.nvim_set_option_value("modifiable", true,  { buf = buf })
   local first = true
 
   utils.read_file(self.log_filename, function(line)
@@ -180,7 +180,7 @@ function M:_show_log()
     first = false
   end)
 
-  vim.api.nvim_set_option_value("readonly", true, { buf = buf })
+  vim.api.nvim_set_option_value("readonly",   true,  { buf = buf })
   vim.api.nvim_set_option_value("modifiable", false, { buf = buf })
 end
 
@@ -198,6 +198,22 @@ function M:_run_target()
   local executables = self.project:get_executable()
   utils.select_from_list("Select target to run", vim.tbl_keys(executables), function(name)
     vim.cmd("botright split term://" .. executables[name].target)
+
+    if self.opts:get().auto_close_terminal then
+      local buf = vim.api.nvim_get_current_buf()
+      vim.api.nvim_create_autocmd("TermClose", {
+        buffer = buf,
+        once = true,
+        callback = function()
+          vim.schedule(function()
+            if vim.api.nvim_buf_is_valid(buf) then
+              vim.api.nvim_buf_delete(buf, { force = true })
+              notification.notify("Mesone: terminal closed", vim.log.levels.INFO)
+            end
+          end)
+        end,
+      })
+    end
   end)
 end
 
