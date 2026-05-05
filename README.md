@@ -84,7 +84,7 @@ You can use your preferred package manager, the following example is based on [`
     show_command_logs = false,
     -- Automatically compile project if a source file has been changed
     auto_compile = false,
-    -- Automatically close terminal window on process exit
+    -- Automatically close terminal window on process exit (only on success)
     auto_close_terminal = false,
     -- Automatically compile project before running
     compile_before_run = false

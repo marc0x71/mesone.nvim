@@ -209,12 +209,16 @@ function M:_run_target()
           buffer = buf,
           once = true,
           callback = function()
-            vim.schedule(function()
-              if vim.api.nvim_buf_is_valid(buf) then
-                vim.api.nvim_buf_delete(buf, { force = true })
-                notification.notify("Mesone: terminal closed", vim.log.levels.INFO)
-              end
-            end)
+            if vim.v.event.status == 0 then
+              vim.schedule(function()
+                if vim.api.nvim_buf_is_valid(buf) then
+                  vim.api.nvim_buf_delete(buf, { force = true })
+                  notification.notify("Mesone: terminal closed", vim.log.levels.INFO)
+                end
+              end)
+            else
+              notification.notify("Mesone: terminal kept open due to errors", vim.log.levels.WARN)
+            end
           end,
         })
       end
