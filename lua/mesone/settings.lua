@@ -8,7 +8,7 @@ local default_settings = {
   auto_compile = true,
   dap_adapter = "gdb",
   auto_close_terminal = false,
-  compile_before_run = false
+  compile_before_run = false,
 }
 
 local M = {}
@@ -46,7 +46,7 @@ function M:ui(on_changed)
         auto_compile = { true, false },
         dap_adapter = {},
         auto_close_terminal = { true, false },
-        compile_before_run = { true, false }
+        compile_before_run = { true, false },
       },
     })
   end

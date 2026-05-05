@@ -170,8 +170,8 @@ function M:_show_log()
     })
   end
 
-  vim.api.nvim_set_option_value("readonly",   false, { buf = buf })
-  vim.api.nvim_set_option_value("modifiable", true,  { buf = buf })
+  vim.api.nvim_set_option_value("readonly", false, { buf = buf })
+  vim.api.nvim_set_option_value("modifiable", true, { buf = buf })
   local first = true
 
   utils.read_file(self.log_filename, function(line)
@@ -183,7 +183,7 @@ function M:_show_log()
     first = false
   end)
 
-  vim.api.nvim_set_option_value("readonly",   true,  { buf = buf })
+  vim.api.nvim_set_option_value("readonly", true, { buf = buf })
   vim.api.nvim_set_option_value("modifiable", false, { buf = buf })
 end
 
