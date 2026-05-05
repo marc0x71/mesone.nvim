@@ -115,7 +115,7 @@ function M:_meson_setup()
   end)
 end
 
-function M:_meson_compile()
+function M:_meson_compile(on_done)
   if self.running then
     notification.notify("Meson already running", "warn")
     return
@@ -129,6 +129,9 @@ function M:_meson_compile()
   self.running = true
   cmd:execute(args, "Compile", function(status)
     self:_on_command_exit(status)
+    if on_done then
+      on_done(status)
+    end
   end)
 end
 
@@ -197,22 +200,35 @@ end
 function M:_run_target()
   local executables = self.project:get_executable()
   utils.select_from_list("Select target to run", vim.tbl_keys(executables), function(name)
-    vim.cmd("botright split term://" .. executables[name].target)
+    local function run_target()
+      vim.cmd("botright split term://" .. executables[name].target)
 
-    if self.opts:get().auto_close_terminal then
-      local buf = vim.api.nvim_get_current_buf()
-      vim.api.nvim_create_autocmd("TermClose", {
-        buffer = buf,
-        once = true,
-        callback = function()
-          vim.schedule(function()
-            if vim.api.nvim_buf_is_valid(buf) then
-              vim.api.nvim_buf_delete(buf, { force = true })
-              notification.notify("Mesone: terminal closed", vim.log.levels.INFO)
-            end
-          end)
-        end,
-      })
+      if self.opts:get().auto_close_terminal then
+        local buf = vim.api.nvim_get_current_buf()
+        vim.api.nvim_create_autocmd("TermClose", {
+          buffer = buf,
+          once = true,
+          callback = function()
+            vim.schedule(function()
+              if vim.api.nvim_buf_is_valid(buf) then
+                vim.api.nvim_buf_delete(buf, { force = true })
+                notification.notify("Mesone: terminal closed", vim.log.levels.INFO)
+              end
+            end)
+          end,
+        })
+      end
+    end
+    if self.opts:get().compile_before_run then
+      self:_meson_compile(function(status)
+        if status == 0 then
+          run_target()
+        else
+          notification.notify("Execution skipped: compile errors", vim.log.levels.WARN)
+        end
+      end)
+    else
+      run_target()
     end
   end)
 end

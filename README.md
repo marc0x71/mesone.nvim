@@ -41,7 +41,8 @@ You can use your preferred package manager, the following example is based on [`
       dap_adapter = "gdb",
       show_command_logs = false,
       auto_compile = true,
-      auto_close_terminal = false
+      auto_close_terminal = false,
+      compile_before_run = false
     },
     dependencies = {
       "j-hui/fidget.nvim",
@@ -84,7 +85,9 @@ You can use your preferred package manager, the following example is based on [`
     -- Automatically compile project if a source file has been changed
     auto_compile = false,
     -- Automatically close terminal window on process exit
-    auto_close_terminal = false
+    auto_close_terminal = false,
+    -- Automatically compile project before running
+    compile_before_run = false
 }
 ```
 
