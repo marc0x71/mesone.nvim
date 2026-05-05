@@ -4,18 +4,15 @@ local function sort_by_line(a, b)
   return a.line < b.line
 end
 
-local function normalize_output(output)
-  return (output:gsub("googletest%-%d+%.%d+%.%d+", "googletest-VERSION"))
-end
-
-local function normalize_results(t)
-  for _, suite in ipairs(t) do
+local function normalize_output(suites)
+  for _, suite in ipairs(suites) do
     for _, test in ipairs(suite.test_list) do
       if test.output then
-        test.output = normalize_output(test.output)
+        test.output = test.output:gsub("Running main%(%)[^\n]+\n", "")
       end
     end
   end
+  return suites
 end
 
 describe("gtest runner", function()
@@ -91,7 +88,7 @@ describe("gtest runner", function()
           {
             name = "FooTest.Simple",
             output =
-            "Running main() from ../subprojects/googletest-VERSION/googletest/src/gtest_main.cc\nNote: Google Test filter = FooTest.Simple\n[==========] Running 1 test from 1 test suite.\n[----------] Global test environment set-up.\n[----------] 1 test from FooTest\n[ RUN      ] FooTest.Simple\n[       OK ] FooTest.Simple (0 ms)\n[----------] 1 test from FooTest (0 ms total)\n\n[----------] Global test environment tear-down\n[==========] 1 test from 1 test suite ran. (0 ms total)\n[  PASSED  ] 1 test.",
+            "Note: Google Test filter = FooTest.Simple\n[==========] Running 1 test from 1 test suite.\n[----------] Global test environment set-up.\n[----------] 1 test from FooTest\n[ RUN      ] FooTest.Simple\n[       OK ] FooTest.Simple (0 ms)\n[----------] 1 test from FooTest (0 ms total)\n\n[----------] Global test environment tear-down\n[==========] 1 test from 1 test suite ran. (0 ms total)\n[  PASSED  ] 1 test.",
             status = "run",
           },
         },
@@ -102,7 +99,7 @@ describe("gtest runner", function()
           {
             name = "FooTest.Skipped",
             output =
-            "Running main() from ../subprojects/googletest-VERSION/googletest/src/gtest_main.cc\nNote: Google Test filter = FooTest.Skipped\n[==========] Running 1 test from 1 test suite.\n[----------] Global test environment set-up.\n[----------] 1 test from FooTest\n[ RUN      ] FooTest.Skipped\n../test/unittest.cc:7: Skipped\nSkipping single test\n\n[  SKIPPED ] FooTest.Skipped (0 ms)\n[----------] 1 test from FooTest (0 ms total)\n\n[----------] Global test environment tear-down\n[==========] 1 test from 1 test suite ran. (0 ms total)\n[  PASSED  ] 0 tests.\n[  SKIPPED ] 1 test, listed below:\n[  SKIPPED ] FooTest.Skipped",
+            "Note: Google Test filter = FooTest.Skipped\n[==========] Running 1 test from 1 test suite.\n[----------] Global test environment set-up.\n[----------] 1 test from FooTest\n[ RUN      ] FooTest.Skipped\n../test/unittest.cc:7: Skipped\nSkipping single test\n\n[  SKIPPED ] FooTest.Skipped (0 ms)\n[----------] 1 test from FooTest (0 ms total)\n\n[----------] Global test environment tear-down\n[==========] 1 test from 1 test suite ran. (0 ms total)\n[  PASSED  ] 0 tests.\n[  SKIPPED ] 1 test, listed below:\n[  SKIPPED ] FooTest.Skipped",
             status = "skipped",
           },
         },
@@ -113,7 +110,7 @@ describe("gtest runner", function()
           {
             name = "FooTest.Fault",
             output =
-            "Running main() from ../subprojects/googletest-VERSION/googletest/src/gtest_main.cc\nNote: Google Test filter = FooTest.Fault\n[==========] Running 1 test from 1 test suite.\n[----------] Global test environment set-up.\n[----------] 1 test from FooTest\n[ RUN      ] FooTest.Fault\n[       OK ] FooTest.Fault (0 ms)\n[----------] 1 test from FooTest (0 ms total)\n\n[----------] Global test environment tear-down\n[==========] 1 test from 1 test suite ran. (0 ms total)\n[  PASSED  ] 1 test.",
+            "Note: Google Test filter = FooTest.Fault\n[==========] Running 1 test from 1 test suite.\n[----------] Global test environment set-up.\n[----------] 1 test from FooTest\n[ RUN      ] FooTest.Fault\n[       OK ] FooTest.Fault (0 ms)\n[----------] 1 test from FooTest (0 ms total)\n\n[----------] Global test environment tear-down\n[==========] 1 test from 1 test suite ran. (0 ms total)\n[  PASSED  ] 1 test.",
             status = "run",
           },
         },
@@ -128,11 +125,6 @@ describe("gtest runner", function()
       table.sort(results[i].test_list,  function(a, b) return a.name < b.name end)
       table.sort(expected[i].test_list, function(a, b) return a.name < b.name end)
     end
-	normalize_results(results)
-	print("-- RESULTS --")
-	print(vim.inspect(results))
-	print("-- EXPECTED --")
-	print(vim.inspect(expected))
-    assert.are.same(expected, results)
+    assert.are.same(expected, normalize_output(results))
   end)
 end)
