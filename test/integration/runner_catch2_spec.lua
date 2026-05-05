@@ -1,11 +1,15 @@
 local _, testcase_runner = unpack(require("mesone.testcases.catch2_runner"))
 
+local function sort_by_line(a, b)
+  return a.line < b.line
+end
+
 describe("catch2 runner", function()
   it("parse testcases", function()
     local runner = testcase_runner:new()
     local testcases =
       runner:get_testcases("test/examples/meson_catch2", "test/examples/meson_catch2/build/test/unittest")
-    assert.are.same(testcases, {
+    local expected = {
       {
         filename = "test/examples/test/unittest.cc",
         line = 4,
@@ -27,7 +31,10 @@ describe("catch2 runner", function()
         status = "unk",
         type = "catch2",
       },
-    })
+    }
+    table.sort(testcases, sort_by_line)
+    table.sort(expected,  sort_by_line)
+    assert.are.same(expected, testcases)
   end)
 
   it("run tests", function()
