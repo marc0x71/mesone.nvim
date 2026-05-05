@@ -114,6 +114,8 @@ describe("gtest runner", function()
       table.sort(results[i].test_list,  function(a, b) return a.name < b.name end)
       table.sort(expected[i].test_list, function(a, b) return a.name < b.name end)
     end
+	print(vim.inspect(results))
+	print(vim.inspect(expected))
     assert.are.same(expected, results)
   end)
 end)
